@@ -39,6 +39,34 @@ ui <- fluidPage(
     # CREATE PANEL - CAN BE SEVERAL DIFFERENT TYPES
     sidebarPanel(
       
+      sliderInput(inputId = "budget" ,
+                  label="What is your budget?:",
+                  value = 40, min=0, max=200),
+    
+      selectInput("interest", "Choose an area that you are interested in:",
+                  list(`Interests` = list(
+                    "Art",
+                    "History",
+                    "Adventure",
+                    "Scenic",
+                    "Sports",
+                    "Foodie",
+                    "Music",
+                    "Shopping",
+                    "Festivals",
+                    "Eco Tourism",
+                    "Architecture",
+                    "Theatre",
+                    "Landmark",
+                    "Recreational")), multiple = TRUE),
+      
+      numericInput("start_time", "Start Time (24 Hour)", 1200),
+      numericInput("end_time", "End Time (24 Hour)", 2100),
+      
+      selectInput("locations", "Example Pull-Down Using Location:", 
+                  refined_locations[,1], selected = NULL, multiple = FALSE,
+                  selectize = TRUE, width = NULL, size = NULL),
+      
       # EXAMPLE SELECTION TYPES
       numericInput("min", "Minimum", 0),
       numericInput("max", "Maximum", 100),
