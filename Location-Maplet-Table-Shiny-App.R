@@ -7,7 +7,7 @@
 library(shiny)
 library(leaflet)
 
-setwd("G:/My Drive/FALL-2021/ETM640/Project/ETM-540-Team-1-Final-Project/")
+setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/")
 
 tourist_locations <- read.csv("location_data.csv") # LOAD DATA FROM FILE
 
