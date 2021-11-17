@@ -31,7 +31,7 @@ refined_locations <- tourist_locations
 ui <- fluidPage(
   
   # APPLICATION TITLE
-  titlePanel("Attractions in Oregon"),
+  titlePanel("Attractions in Portland Oregon"),
   
   # CREATE A SIDEBAR SECTION
   sidebarLayout(  
@@ -105,6 +105,7 @@ server <- function(input, output, session) {
   
   # DEFINE AND RUN THE OPTIMIZATION MODEL HERE <- <- <- <-
   #
+  # NEED TO HAVE THE AVERAGE TIME SPENT AT EACH LOCATION
   #
   #
   # SET REFINED LOCATION MATRIX VALUES AFTER PROCESSED
@@ -223,6 +224,8 @@ server <- function(input, output, session) {
     
     # Generate a png
     png(outfile, width=400, height=400)
+    
+    # TEMP - PRINT SIMPLE HISTOGRAM
     hist(rnorm(input$n))
     dev.off()
     
