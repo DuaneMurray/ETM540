@@ -6,10 +6,11 @@
 
 library(shiny)
 library(leaflet)
+#library(DT)
 
 setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
 
-tourist_locations <- read.csv("location_data.csv") # LOAD DATA FROM FILE
+tourist_locations <- read.csv("portland_location_data.csv") # LOAD DATA FROM FILE
 
 # USE MEANINGFUL NAMES FOR THE DATA COLUMNS
 colnames(tourist_locations) <- c("Attraction", 
@@ -30,7 +31,7 @@ refined_locations <- tourist_locations
 ui <- fluidPage(
   
   # APPLICATION TITLE
-  titlePanel("Attractions in Oregon"),
+  titlePanel("Attractions in Portland Oregon"),
   
   # CREATE A SIDEBAR SECTION
   sidebarLayout(  
@@ -73,11 +74,14 @@ ui <- fluidPage(
       numericInput("end_time", "End Time (24 Hour)", 2100),
       
       # EXAMPLE SELECTION TYPES
-      numericInput("min", "Minimum", 0),
-      numericInput("max", "Maximum", 100),
-      sliderInput("n", "n", min = 0, max = 100, value = 50),
+      #numericInput("min", "Minimum", 0),
+      #numericInput("max", "Maximum", 100),
+      #sliderInput("n", "n", min = 0, max = 100, value = 50),
       
-      plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
+      #plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
+      
+      actionButton("reset_input", "Reset"),
+      actionButton("run_model", "RUN MODEL")
     ),
     
     # CREATE MAIN DATA OUTPUT AREA
@@ -101,30 +105,10 @@ server <- function(input, output, session) {
   
   # DEFINE AND RUN THE OPTIMIZATION MODEL HERE <- <- <- <-
   #
+  # NEED TO HAVE THE AVERAGE TIME SPENT AT EACH LOCATION
   #
   #
   # SET REFINED LOCATION MATRIX VALUES AFTER PROCESSED
-  
-  # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
-  output$mymap <- renderLeaflet({
-    leaflet() %>%
-    addTiles() %>%
-    addMarkers(lng = refined_locations[,9], 
-               lat = refined_locations[,8], 
-               label = as.character(refined_locations[,1]), 
-               popup = as.character(refined_locations[,4]))
-  })
-
-  # OUTPUT THE CONTENTS OF THE refined_locations MATRIX IN A TABLE
-  # DEFINED AS "data" IN THE USER INTERFACE
-  output$data <- renderDataTable({
-    refined_locations
-  })
-  
-  
-  ############################
-  # WORK IN PROGRESS
-  ############################
 
   # ASSOCIATED WITH THE MIN SLIDER VALUE IN THE USER INTERFACE
   observeEvent(input$min, {
@@ -136,6 +120,102 @@ server <- function(input, output, session) {
     updateSliderInput(inputId = "n", max = input$max)
   })
   
+  # ASSOCIATED WITH THE BUDGET SLIDER VALUE IN THE USER INTERFACE
+  observeEvent(input$budget, {
+    #
+  })
+  
+  # ASSOCIATED WITH THE INTEREST SELECTION VALUES IN THE USER INTERFACE
+  observeEvent(input$interests, {
+    #
+  })
+  
+  # ASSOCIATED WITH THE INTEREST SELECTION VALUES IN THE USER INTERFACE
+  observeEvent(input$locations, {
+    #
+  })
+  
+  # ASSOCIATED WITH THE START TIME VALUE IN THE USER INTERFACE
+  observeEvent(input$start_time, {
+    #
+  })
+  
+  # ASSOCIATED WITH THE END TIME VALUE IN THE USER INTERFACE
+  observeEvent(input$end_time, {
+    #
+  })
+  
+  # RUN THE MODEL - UPDATE THE MAP AND LIST TO SHOW RESULTS
+  observeEvent(input$run_model, {
+    #
+  })
+  
+  # RESET ALL FORM INPUT AND OUTPUT ELEMENTS TO DEFAULTS
+  observeEvent(input$reset_input, {
+    updateSliderInput(session, inputId = "budget" ,
+                label="What is your budget?:",
+                value = 40, min=0, max=200)
+    updateSelectInput(session, "interests", "Choose the areas that you are 
+                      interested in:",
+                choices=list(`Interests` = list(
+                  "Art",
+                  "History",
+                  "Adventure",
+                  "Scenic",
+                  "Sports",
+                  "Foodie",
+                  "Music",
+                  "Shopping",
+                  "Festivals",
+                  "Eco Tourism",
+                  "Architecture",
+                  "Theatre",
+                  "Landmark",
+                  "Recreational")), selected = NULL)
+    updateSelectInput(session, "locations", "Choose Specific Locations:", 
+                choices=refined_locations[,1], selected = NULL)
+    updateNumericInput(session, "start_time", label="Start Time (24 Hour)", 
+                       value=1200)
+    updateNumericInput(session, "end_time", label="End Time (24 Hour)", 
+                       value=2100)
+    
+    # RESET THE LEAFLET MAP
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addMarkers(lng = refined_locations[,9], 
+                   lat = refined_locations[,8], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,4]))
+    })
+    
+    # RESET THE DATA TABLE
+    output$data <- renderDataTable({
+      refined_locations
+    })
+    
+  })
+  
+  # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+  output$mymap <- renderLeaflet({
+    leaflet() %>%
+    addTiles() %>%
+    setView(-122.6792634, 45.51867737, zoom = 14) %>%
+    addMarkers(lng = refined_locations[,9], 
+               lat = refined_locations[,8], 
+               label = as.character(refined_locations[,1]), 
+               popup = as.character(refined_locations[,4]))
+  })
+
+  # OUTPUT THE CONTENTS OF THE refined_locations MATRIX IN A TABLE
+  # DEFINED AS "data" IN THE USER INTERFACE
+  output$data <- renderDataTable({
+    refined_locations
+  })
+
+
+  
   # A PLOT OF FIXED SIZE - TEMP AREA - INTO "optimal_path" AREA IN THE UI
   output$optimal_path <- renderImage({
     # A temp file to save the output. It will be deleted after renderImage
@@ -144,6 +224,8 @@ server <- function(input, output, session) {
     
     # Generate a png
     png(outfile, width=400, height=400)
+    
+    # TEMP - PRINT SIMPLE HISTOGRAM
     hist(rnorm(input$n))
     dev.off()
     
