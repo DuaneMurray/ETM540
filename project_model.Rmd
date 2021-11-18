@@ -1,0 +1,92 @@
+---
+title: "Team 1 Project Model"
+author: "Duane Murray"
+date: "11/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(library(tinytex))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ROI))
+suppressPackageStartupMessages(library(ROI.plugin.glpk))
+suppressPackageStartupMessages(library(ompr))
+suppressPackageStartupMessages(library(ompr.roi))
+suppressPackageStartupMessages(library(pander))
+
+library(knitr)
+#library(dplyr)
+library(ggplot2)
+```
+
+
+**Miller-Tucker-Zemlin (MTZ) formulation for Traveling Salesperson Problem (TSP)**
+
+\begin{align}
+\text{min} \quad & \sum_{i = 1}^{n} \sum_{j = 1, j \neq i}^{n} c_{ij} x_{ij}, \\
+\text{subject to} \\
+& \sum_{i=1, i \neq j}^{n} x_{ij} = 1, \quad j=1,2,…,n,\\
+& \sum_{j=1, j \neq i}^{n} x_{ij} = 1, \quad i=1,2,…,n,\\
+& u_i - u_j + n x_{ij} \leq n-1, \quad 2 \leq i \neq j \leq n, \\
+& x_{ij} \in \{0,1\} \quad i, j =1,2,…,n, \quad i \neq j, \\
+& u_i \in \mathbb{R}^+ \quad i=1,2,…,n.
+\end{align}
+
+**Base Traveling Salesman Problem ompr Model Code to Work From**
+```{r Base-MTZ-Based-TSP-Model}
+n <- 10 # NUMBER OF LOCATIONS TO VISIT (replace with number of data matrix rows)
+# from 0 to ...
+max_x <- 500
+max_y <- 500
+
+set.seed(2451)
+cities <- data.frame(id = 1:n, x = runif(n, max = max_x), y = runif(n, max = max_y))
+
+ggplot(cities, aes(x, y)) + 
+  geom_point()
+
+distance <- as.matrix(stats::dist(select(cities, x, y), diag = TRUE, upper = TRUE))
+dist_fun <- function(i, j) {
+  vapply(seq_along(i), function(k) distance[i[k], j[k]], numeric(1L))
+}
+
+
+model <- MIPModel() %>%
+  # we create a variable that is 1 iff we travel from location i to j
+  add_variable(x[i, j], i = 1:n, j = 1:n, 
+               type = "integer", lb = 0, ub = 1) %>%
+  # a helper variable for the MTZ formulation of the TSP
+  add_variable(u[i], i = 1:n, lb = 1, ub = n) %>% 
+  # minimize travel distance
+  set_objective(sum_expr(dist_fun(i, j) * x[i, j], i = 1:n, j = 1:n), "min") %>%
+  # you cannot go to the same location
+  set_bounds(x[i, i], ub = 0, i = 1:n) %>%
+  # leave each location
+  add_constraint(sum_expr(x[i, j], j = 1:n) == 1, i = 1:n) %>%
+  # visit each location
+  add_constraint(sum_expr(x[i, j], i = 1:n) == 1, j = 1:n) %>%
+  # ensure no sub-tours are used (arc constraints)
+  add_constraint(u[i] >= 2, i = 2:n) %>% 
+  add_constraint(u[i] - u[j] + 1 <= (n - 1) * (1 - x[i, j]), i = 2:n, j = 2:n)
+
+result <- solve_model(model, with_ROI(solver = "glpk", verbose = TRUE))
+
+solution <- get_solution(result, x[i, j]) %>% 
+  filter(value > 0) 
+kable(head(solution, 3))
+
+paths <- select(solution, i, j) %>% 
+  rename(from = i, to = j) %>% 
+  mutate(trip_id = row_number()) %>% 
+  tidyr::gather(property, idx_val, from:to) %>% 
+  mutate(idx_val = as.integer(idx_val)) %>% 
+  inner_join(cities, by = c("idx_val" = "id"))
+kable(head(arrange(paths, trip_id), 4))
+
+ggplot(cities, aes(x, y)) + 
+  geom_point() + 
+  geom_line(data = paths, aes(group = trip_id)) + 
+  ggtitle(paste0("Optimal route with cost: ", round(objective_value(result), 2)))
+```
