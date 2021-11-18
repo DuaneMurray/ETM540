@@ -6,11 +6,21 @@
 
 library(shiny)
 library(leaflet)
+
+suppressPackageStartupMessages(library(tinytex))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ROI))
+suppressPackageStartupMessages(library(ROI.plugin.glpk))
+suppressPackageStartupMessages(library(ompr))
+suppressPackageStartupMessages(library(ompr.roi))
+suppressPackageStartupMessages(library(ggplot2))
+#suppressPackageStartupMessages(library(pander))
 #library(DT)
 
 setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
 
-tourist_locations <- read.csv("portland_location_data.csv") # LOAD DATA FROM FILE
+tourist_locations <- read.csv("TEST_portland_location_data.csv") # LOAD DATA FROM FILE
 
 # USE MEANINGFUL NAMES FOR THE DATA COLUMNS
 colnames(tourist_locations) <- c("Attraction", 
@@ -73,15 +83,18 @@ ui <- fluidPage(
       # USER END TIME AVAILABLE - 24 HOUR CLOCK
       numericInput("end_time", "End Time (24 Hour)", 2100),
       
-      # EXAMPLE SELECTION TYPES
-      #numericInput("min", "Minimum", 0),
-      #numericInput("max", "Maximum", 100),
-      #sliderInput("n", "n", min = 0, max = 100, value = 50),
-      
-      #plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
-      
+      # RESET ALL INPUT VALUES TO DEFAULT
       actionButton("reset_input", "Reset"),
-      actionButton("run_model", "RUN MODEL")
+      
+      # RUN THE DATA THROUGH THE OPTIMIZATION TSP MODEL
+      actionButton("run_model", "RUN MODEL"),
+      
+      # BLANK ROW SPACE
+      p(),
+      
+      # PLACE THE PLOT FROM THE OPTIMIZATION MODEL ONTO THE SHINY SCREEN
+      plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
+      
     ),
     
     # CREATE MAIN DATA OUTPUT AREA
@@ -91,8 +104,6 @@ ui <- fluidPage(
       p(),
       dataTableOutput("data"), # LIST OF DATA FROM IMPORT FILE
       p() # BE SURE TO ADD A COMMA (,) TO THE END OF THIS IF PLOT ENABLED
-      #plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
-      
     )
     
   ) # END sidebarLayout()
@@ -103,21 +114,65 @@ ui <- fluidPage(
 # MAIN CODE TO GENERATE DATA TO SEND TO THE USER INTERFACE SECTION
 server <- function(input, output, session) {
   
-  # DEFINE AND RUN THE OPTIMIZATION MODEL HERE <- <- <- <-
-  #
-  # NEED TO HAVE THE AVERAGE TIME SPENT AT EACH LOCATION
-  #
-  #
-  # SET REFINED LOCATION MATRIX VALUES AFTER PROCESSED
+  # ACTIONS TO TAKE WHEN THE USER PRESSES THE RUN MODEL BUTTON IN THE UI
+  observeEvent(input$run_model, {
+    
+    n <- nrow(refined_locations) # NUMBER OF TOTAL LOCATIONS TO VISIT
 
-  # ASSOCIATED WITH THE MIN SLIDER VALUE IN THE USER INTERFACE
-  observeEvent(input$min, {
-    updateSliderInput(inputId = "n", min = input$min)
-  })
-  
-  # ASSOCIATED WITH THE MAX SLIDER VALUE IN THE USER INTERFACE
-  observeEvent(input$max, {
-    updateSliderInput(inputId = "n", max = input$max)
+    # LONGITUDE = x, LATUTUDE = y
+    locations <- data.frame(id = 1:n, x = refined_locations[,9], y = refined_locations[,8])
+    
+    distance <- as.matrix(stats::dist(select(locations, x, y), diag = TRUE, upper = TRUE))
+    dist_fun <- function(i, j) {
+      vapply(seq_along(i), function(k) distance[i[k], j[k]], numeric(1L))
+    }
+    
+    model <- MIPModel() %>%
+     
+      # WE CREATE A VAR THAT IS 1 IFF WE TRAVEL FROM LOC i to j
+      add_variable(x[i, j], i = 1:n, j = 1:n, 
+                   type = "integer", lb = 0, ub = 1) %>%
+      
+      # HELPER VAR FOR THE MTZ FORMULATION OF THE TSP
+      add_variable(u[i], i = 1:n, lb = 1, ub = n) %>% 
+      
+      # MINIMIZE THE TRAVEL DISTANCE
+      set_objective(sum_expr(dist_fun(i, j) * x[i, j], i = 1:n, j = 1:n), "min") %>%
+      
+      # YOU CAN ONLY VISIT A LOCATION ONE TIME, NO REPEATS
+      set_bounds(x[i, i], ub = 0, i = 1:n) %>%
+      
+      # MUST LEAVE EACH LOCATION
+      add_constraint(sum_expr(x[i, j], j = 1:n) == 1, i = 1:n) %>%
+      
+      # VISIT EACH LOCATION
+      add_constraint(sum_expr(x[i, j], i = 1:n) == 1, j = 1:n) %>%
+      
+      # ENSURE THAT NO SUB-BRANHES ARE USED
+      add_constraint(u[i] >= 2, i = 2:n) %>% 
+      add_constraint(u[i] - u[j] + 1 <= (n - 1) * (1 - x[i, j]), i = 2:n, j = 2:n)
+    
+    result <- solve_model(model, with_ROI(solver = "glpk", verbose = TRUE))
+    
+    solution <- get_solution(result, x[i, j]) %>% 
+      filter(value > 0) 
+    
+    # BUILD PATHS FOR EACH VISIT TO EACH LOCATION
+    paths <- select(solution, i, j) %>% 
+      rename(from = i, to = j) %>% 
+      mutate(trip_id = row_number()) %>% 
+      tidyr::gather(property, idx_val, from:to) %>% 
+      mutate(idx_val = as.integer(idx_val)) %>% 
+      inner_join(locations, by = c("idx_val" = "id"))
+    
+    # CREATE PLOT OF PATH TO TAKE TO VISIT ALL LOCATIONS ONLY ONCE AT LOWEST COST
+    output$optimal_path <- renderPlot({ 
+      ggplot(locations, aes(x, y)) + 
+        geom_point() + 
+        geom_line(data = paths, aes(group = trip_id)) + 
+        ggtitle(paste0("Optimal route with cost: ", round(objective_value(result), 2)))
+    })
+    
   })
   
   # ASSOCIATED WITH THE BUDGET SLIDER VALUE IN THE USER INTERFACE
@@ -213,7 +268,6 @@ server <- function(input, output, session) {
   output$data <- renderDataTable({
     refined_locations
   })
-
 
   
   # A PLOT OF FIXED SIZE - TEMP AREA - INTO "optimal_path" AREA IN THE UI

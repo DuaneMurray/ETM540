@@ -36,23 +36,35 @@ library(ggplot2)
 
 **Base Traveling Salesman Problem ompr Model Code to Work From**
 ```{r Base-MTZ-Based-TSP-Model}
-n <- 10 # NUMBER OF LOCATIONS TO VISIT (replace with number of data matrix rows)
+
+setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
+
+refined_locations <- read.csv("TEST_portland_location_data.csv") # LOAD DATA FROM FILE
+
+n <- nrow(refined_locations) # NUMBER OF LOCATIONS TO VISIT (replace with number of data matrix rows)
+#n <- 10
+  
 # from 0 to ...
-max_x <- 500
-max_y <- 500
+#max_x <- 500
+#max_y <- 500
+#set.seed(2451)
 
-set.seed(2451)
-cities <- data.frame(id = 1:n, x = runif(n, max = max_x), y = runif(n, max = max_y))
+#Longitude = x, Latitude = y
+locations <- data.frame(id = 1:n, x = refined_locations[,9], y = refined_locations[,8])
+#cities <- data.frame(id = 1:n, x = runif(n, max = max_x), y = runif(n, max = max_y))
 
-ggplot(cities, aes(x, y)) + 
+pander(locations)
+
+ggplot(locations, aes(x, y)) + 
   geom_point()
 
-distance <- as.matrix(stats::dist(select(cities, x, y), diag = TRUE, upper = TRUE))
+distance <- as.matrix(stats::dist(select(locations, x, y), diag = TRUE, upper = TRUE))
 dist_fun <- function(i, j) {
   vapply(seq_along(i), function(k) distance[i[k], j[k]], numeric(1L))
 }
 
-
+# MIPModel() is standard method
+# MILPmodel() is beta, and purported as 1000 times faster than MIP
 model <- MIPModel() %>%
   # we create a variable that is 1 iff we travel from location i to j
   add_variable(x[i, j], i = 1:n, j = 1:n, 
@@ -82,10 +94,10 @@ paths <- select(solution, i, j) %>%
   mutate(trip_id = row_number()) %>% 
   tidyr::gather(property, idx_val, from:to) %>% 
   mutate(idx_val = as.integer(idx_val)) %>% 
-  inner_join(cities, by = c("idx_val" = "id"))
+  inner_join(locations, by = c("idx_val" = "id"))
 kable(head(arrange(paths, trip_id), 4))
 
-ggplot(cities, aes(x, y)) + 
+ggplot(locations, aes(x, y)) + 
   geom_point() + 
   geom_line(data = paths, aes(group = trip_id)) + 
   ggtitle(paste0("Optimal route with cost: ", round(objective_value(result), 2)))

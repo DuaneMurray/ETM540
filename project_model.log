@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.10) (preloaded format=pdflatex 2021.10.21)  18 NOV 2021 10:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.10) (preloaded format=pdflatex 2021.10.21)  18 NOV 2021 14:02
 entering extended mode
 **./project_model.tex
 (project_model.tex
@@ -627,62 +627,61 @@ LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
 39.
 (C:\Users\19713\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-)
-<project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-1.pdf, id=3, 469.755
-pt x 325.215pt>
+) [1
+
+{C:/Users/19713/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
+<project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-1.pdf, id=30, 469.75
+5pt x 325.215pt>
 File: project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-1.pdf Graphic f
 ile (type pdf)
 <use project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-1.pdf>
 Package pdftex.def Info: project_model_files/figure-latex/Base-MTZ-Based-TSP-Mo
-del-1.pdf  used on input line 153.
+del-1.pdf  used on input line 200.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[1
-
-{C:/Users/19713/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 158.
-[2 <./project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-1.pdf>]
-<project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-2.pdf, id=40, 469.75
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 205.
+[2 <./project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-1.pdf>] [3]
+<project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-2.pdf, id=46, 469.75
 5pt x 325.215pt>
 File: project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-2.pdf Graphic f
 ile (type pdf)
 <use project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-2.pdf>
 Package pdftex.def Info: project_model_files/figure-latex/Base-MTZ-Based-TSP-Mo
-del-2.pdf  used on input line 257.
+del-2.pdf  used on input line 315.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[3] [4 <./project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-2.pdf>] (pr
-oject_model.aux) ) 
+[4 <./project_model_files/figure-latex/Base-MTZ-Based-TSP-Model-2.pdf>] (projec
+t_model.aux) ) 
 Here is how much of TeX's memory you used:
- 13446 strings out of 478927
- 204421 string characters out of 2852534
- 553340 words of memory out of 3000000
- 31004 multiletter control sequences out of 15000+600000
+ 13448 strings out of 478927
+ 204434 string characters out of 2852534
+ 565389 words of memory out of 3000000
+ 31005 multiletter control sequences out of 15000+600000
  448635 words of font info for 91 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,10n,80p,520b,479s stack positions out of 5000i,500n,10000p,200000b,80000s
-{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips
-/lm/lm-ec.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/
-lm-mathsy.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/
-lm-rm.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-m
-athit.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-m
-athex.enc}<C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/l
-mbx10.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/l
-mex10.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/l
-mmi10.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/l
-mmi7.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lm
-r10.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr
-12.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr1
-7.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr7.
-pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.
-pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.p
-fb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.p
-fb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.p
-fb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtti10.
-pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/s
-ymbols/msbm10.pfb>
-Output written on project_model.pdf (4 pages, 252155 bytes).
+ 74i,10n,80p,520b,449s stack positions out of 5000i,500n,10000p,200000b,80000s
+{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/
+lm-ec.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-m
+athsy.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-r
+m.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathi
+t.enc}{C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathe
+x.enc}<C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx1
+0.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmex1
+0.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi1
+0.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi7
+.pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.
+pfb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.p
+fb><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pf
+b><C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr7.pfb>
+<C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb>
+<C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><
+C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><
+C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><
+C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtti10.pfb>
+<C:/Users/19713/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbo
+ls/msbm10.pfb>
+Output written on project_model.pdf (4 pages, 256886 bytes).
 PDF statistics:
- 125 PDF objects out of 1000 (max. 8388607)
- 14 named destinations out of 1000 (max. 500000)
+ 126 PDF objects out of 1000 (max. 8388607)
+ 15 named destinations out of 1000 (max. 500000)
  24587 words of extra memory for PDF output out of 24883 (max. 10000000)
 
