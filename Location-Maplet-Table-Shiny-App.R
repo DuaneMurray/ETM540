@@ -22,7 +22,7 @@ suppressPackageStartupMessages(library(tidyverse))
 setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
 
 #tourist_locations <- read.csv("portland_location_data.csv") # LOAD DATA FROM FILE
-tourist_locations <- read.csv("TEST_portland_location_data.csv")
+tourist_locations <- read.csv("TEST_portland_location_data_2.csv")
 
 # USE THE LAST ROW IN THE DATA FILE FOR THE STARTING LOCATION
 start_location <- tail(tourist_locations, n=1)
@@ -30,10 +30,10 @@ colnames(start_location) <- colnames(tourist_locations)
 
 # USE MEANINGFUL NAMES FOR THE DATA COLUMNS
 colnames(tourist_locations) <- c("Attraction", 
-                                 "InPDX", 
+                                 #"InPDX", 
                                  "Cost",
                                  "Address",
-                                 "DistanceFromDT",
+                                 #"DistanceFromDT",
                                  "OpenTime",
                                  "CloseTime",
                                  "latitude",
@@ -87,15 +87,9 @@ ui <- fluidPage(
                   refined_locations[,1], selected = NULL, multiple = TRUE,
                   selectize = TRUE, width = NULL, size = NULL),
       
-      # USER START TIME AVAILABLE - 24 HOUR CLOCK
-      #numericInput("start_time", "Start Time (24 Hour)", 900),
-      
       sliderInput(inputId = "start_time" ,
                   label="Start Time (24 Hr)?",
                   value = 100, min=0, step=100, max=2400),
-      
-      # USER END TIME AVAILABLE - 24 HOUR CLOCK
-      #numericInput("end_time", "End Time (24 Hour)", 2400),
 
       sliderInput(inputId = "end_time" ,
             label="End Time (24 Hr)?",
@@ -121,7 +115,12 @@ ui <- fluidPage(
     # CREATE MAIN DATA OUTPUT AREA
     mainPanel (
       leafletOutput("mymap", height=600), # MAP OF TOURIST ATTRACTION LOCATIONS
+      
       p(),
+      
+      # PLACE THE PLOT FROM THE OPTIMIZATION MODEL ONTO THE SHINY SCREEN
+      #plotOutput("optimal_path"), # TEMP AREA FOR OPTIMIZATION OUTPUT
+      
       dataTableOutput("data"), # LIST OF DATA FROM IMPORT FILE
       p() # BE SURE TO ADD A COMMA (,) TO THE END OF THIS IF PLOT ENABLED
     )
@@ -140,13 +139,14 @@ server <- function(input, output, session) {
     n <- nrow(refined_locations) # NUMBER OF TOTAL LOCATIONS TO VISIT
 
     # LONGITUDE = x, LATUTUDE = y
-    locations <- data.frame(id = 1:n, x = refined_locations[,9], 
-                            y = refined_locations[,8])
+    locations <- data.frame(id = 1:n, x = refined_locations[,7], 
+                            y = refined_locations[,6], 
+                            loc_name = refined_locations[,1])
     
-    starting_pt <- data.frame(id = 1:n, x = start_location[,9], 
-                            y = start_location[,8])
+    starting_pt <- data.frame(id = 1:n, x = start_location[,7], 
+                            y = start_location[,6])
     
-    attraction_costs <- data.frame(id = 1:n, loc_cost = refined_locations[,3])
+    #attraction_costs <- data.frame(id = 1:n, loc_cost = refined_locations[,2])
     
     distance <- as.matrix(stats::dist(select(locations, x, y), 
                                       diag = TRUE, upper = TRUE))
@@ -197,6 +197,8 @@ server <- function(input, output, session) {
     output$optimal_path <- renderPlot({ 
       ggplot(locations, aes(x, y)) + 
         geom_point(size=5) + 
+        geom_text(data = locations, aes(label = loc_name), hjust = 0.75,  
+                  vjust = -1) +
         geom_line(data = paths, aes(group = trip_id)) + 
         ggtitle(paste0("Optimal route with cost: ", 
                        round(objective_value(result), 2)))
@@ -223,15 +225,16 @@ server <- function(input, output, session) {
       leaflet() %>%
         addTiles() %>%
         setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addCircleMarkers(lng = start_location[,9],
-                         lat = start_location[,8],
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
                          label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,4]),
+                         popup = as.character(start_location[,3]),
                          color = "red") %>%
-        addMarkers(lng = refined_locations[,9], 
-                   lat = refined_locations[,8], 
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
                    label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,4]))
+                   popup = as.character(refined_locations[,3]))
     })
     
     output$data <- renderDataTable({
@@ -287,16 +290,16 @@ server <- function(input, output, session) {
     output$mymap <- renderLeaflet({
       leaflet() %>%
         addTiles() %>%
-        addCircleMarkers(lng = start_location[,9],
-                         lat = start_location[,8],
-                         label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,4]),
-                         color = "red") %>%
         setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addMarkers(lng = refined_locations[,9], 
-                   lat = refined_locations[,8], 
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
                    label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,4]))
+                   popup = as.character(refined_locations[,3]))
     })
     
     # UPDATE THE LIST OF ATTRACTIONS TABLE
@@ -323,15 +326,15 @@ server <- function(input, output, session) {
       leaflet() %>%
         addTiles() %>%
         setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addCircleMarkers(lng = start_location[,9],
-                         lat = start_location[,8],
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
                          label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,4]),
+                         popup = as.character(start_location[,3]),
                          color = "red") %>%
-        addMarkers(lng = refined_locations[,9], 
-                   lat = refined_locations[,8], 
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
                    label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,4]))
+                   popup = as.character(refined_locations[,3]))
     })
     
     # UPDATE LIST OF ATTRACTIONS TABLE
@@ -387,15 +390,15 @@ server <- function(input, output, session) {
       leaflet() %>%
         addTiles() %>%
         setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addCircleMarkers(lng = start_location[,9],
-                         lat = start_location[,8],
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
                          label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,4]),
+                         popup = as.character(start_location[,3]),
                          color = "red") %>%
-        addMarkers(lng = refined_locations[,9], 
-                   lat = refined_locations[,8], 
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
                    label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,4]))
+                   popup = as.character(refined_locations[,3]))
     })
     
     # RESET THE DATA TABLE
@@ -410,15 +413,15 @@ server <- function(input, output, session) {
     leaflet() %>%
     addTiles() %>%
     setView(-122.6792634, 45.51867737, zoom = 14) %>%
-      addCircleMarkers(lng = start_location[,9],
-                       lat = start_location[,8],
+      addCircleMarkers(lng = start_location[,7],
+                       lat = start_location[,6],
                        label = as.character(start_location[,1]),
-                       popup = as.character(start_location[,4]),
+                       popup = as.character(start_location[,3]),
                        color = "red") %>%
-    addMarkers(lng = refined_locations[,9], 
-               lat = refined_locations[,8], 
-               label = as.character(refined_locations[,1]), 
-               popup = as.character(refined_locations[,4]))
+      addMarkers(lng = refined_locations[,7], 
+                 lat = refined_locations[,6], 
+                 label = as.character(refined_locations[,1]), 
+                 popup = as.character(refined_locations[,3]))
   })
 
   # OUTPUT THE CONTENTS OF THE refined_locations MATRIX IN A TABLE
