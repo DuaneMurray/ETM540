@@ -15,7 +15,7 @@ suppressPackageStartupMessages(library(ROI.plugin.glpk))
 suppressPackageStartupMessages(library(ompr))
 suppressPackageStartupMessages(library(ompr.roi))
 suppressPackageStartupMessages(library(pander))
-
+library(tidyverse)
 library(knitr)
 #library(dplyr)
 library(ggplot2)

@@ -1,6 +1,4 @@
-Attraction,In Portland?,Cost ($),Attraction Address ,"Distance from DT in Miles
-(45°30'54.9""N 122°40'42.2""W)
-(45.515258, -122.678380)",Opening Hours,Closing Hours,Latitude,Longitude,Classification
+Attraction,In Portland?,Cost ($),Attraction Address ,Distance from DT in Miles,Opening Hours,Closing Hours,Latitude,Longitude,Classification
 International Rose Garden ,Yes,2.00," 400 SW Kingston Ave, Portland, OR 97205",2,1000,1530,45.520432,-122.706772,"eco, scenic, adventure"
 Japanese Garden,Yes,16.95,"611 SW Kingston Ave, Portland, OR 97205",2.7,500,2200,45.518139,-122.708771,"eco, scenic, adventure"
 Oregon Zoo,Yes,24.00,"4001 SW Canyon Rd, Portland, OR 97221",2.7,900,1730,45.50928256,-122.7159482,"eco, scenic, adventure"
@@ -10,11 +8,10 @@ Oregon Musume of Science and Industry ,Yes,12.00,"1945 SE Water Ave, Portland, O
 Lan Su Chinese Garden,Yes,12.95,"239 NW Everett St, Portland, OR 97209",1,1000,1600,45.52564403,-122.6730167,
 Forest Park,Yes,0.00,"4099 NW Thurman St, Portland, OR 97210",10.5,500,2200,45.53995879,-122.7248706,
 Portlandia,Yes,0.00,"1120 SW 5th Ave, Portland, OR 97255",0.075,0,2400,45.51580896,-122.6788705,"history, landmark"
-Mt. Tabor Stairs,Yes,0.00,"6738 Mt Tabor, Portland, OR 97215",4.5,500,1,45.51571016,-122.5922171,"history, landmark"
 Mt. Tabor Park,Yes,0.00,"SE 60th Ave &, SE Salmon St, Portland, OR 97215",4.1,500,0,45.51405604,-122.5987276,landmark
 St. Johns Bridge,Yes,0.00,"8600 NW Bridge Ave, Portland, OR 97203",7.8,0,2400,45.58343974,-122.7690292,"history, landmark"
 Joan of Arc,Yes,0.00,"418-426 NE Cesar E Chavez Blvd, Portland, OR 97232 ",3.2,0,2400,45.52612701,-122.6227313,"history, landmark"
 Tilikum Crossing: Bridge of the People,Yes,0.00,"Tilikum Crossing, Portland, OR 97214",1.5,0,2400,45.50565294,-122.6660294,"history, landmark"
 Paul Bunyan Statue,Yes,0.00,"8433 N Interstae Ave, Portland, OR 97217",6.2,0,2400,45.58448608,-122.6871262,"history, landmark"
 Portland Oregon White Stag Sign,Yes,0.00,"70 NW Couch St, Portland, OR 97209",1.1,0,2400,45.52354016,-122.6709619,"history, landmark"
-The Lorax Houses,Yes,0.00,"N Albina Ave & Beech St, Portland, OR 97227",4.7,0,2400,45.54974349,-122.6743995,"history, landmark"
+Benson Hotel,Yes,500.00,"309 SW Broadway, Portland, OR 97205",0.00,0,2400,45.5216,-122.6787,"hotel"
