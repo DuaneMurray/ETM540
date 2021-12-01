@@ -16,16 +16,15 @@ suppressPackageStartupMessages(library(ompr))
 suppressPackageStartupMessages(library(ompr.roi))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(tidyverse))
-#suppressPackageStartupMessages(library(pander))
 #library(DT)
 
 setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
 
-#tourist_locations <- read.csv("portland_location_data.csv") # LOAD DATA FROM FILE
+#tourist_locations <- read.csv("portland_location_data_2.csv") # LOAD FROM FILE
 tourist_locations <- read.csv("TEST_portland_location_data_2.csv")
 
 # USE THE LAST ROW IN THE DATA FILE FOR THE STARTING LOCATION
-start_location <- tail(tourist_locations, n=1)
+start_location <- tail(tourist_locations, n = 1)
 colnames(start_location) <- colnames(tourist_locations)
 
 # USE MEANINGFUL NAMES FOR THE DATA COLUMNS
@@ -36,16 +35,12 @@ colnames(tourist_locations) <- c("Attraction",
                                  #"DistanceFromDT",
                                  "OpenTime",
                                  "CloseTime",
-                                 "latitude",
-                                 "longitude",
+                                 "Latitude",
+                                 "Longitude",
                                  "Classification")
 
 # JUST A TEMP LOCATION TO FILTER THE SOURCE DATA MATRIX BY USER SELECTIONS
 refined_locations <- tourist_locations
-
-s_time <- 100
-e_time <- 2400
-total_budget <- 50
 
 # USER INTERFACE SECTION DEFINITION
 ui <- fluidPage(
@@ -89,11 +84,11 @@ ui <- fluidPage(
       
       sliderInput(inputId = "start_time" ,
                   label="Start Time (24 Hr)?",
-                  value = 100, min=0, step=100, max=2400),
+                  value = 100, min=0, step=100, max=2400, sep=""),
 
       sliderInput(inputId = "end_time" ,
             label="End Time (24 Hr)?",
-            value = 2400, min=0, step=100, max=2400),
+            value = 2400, min=0, step=100, max=2400, sep=""),
 
       # RESET ALL INPUT VALUES TO DEFAULT
       actionButton("reset_input", "Reset"),
@@ -115,11 +110,7 @@ ui <- fluidPage(
     # CREATE MAIN DATA OUTPUT AREA
     mainPanel (
       leafletOutput("mymap", height=600), # MAP OF TOURIST ATTRACTION LOCATIONS
-      
       p(),
-      
-      # PLACE THE PLOT FROM THE OPTIMIZATION MODEL ONTO THE SHINY SCREEN
-      #plotOutput("optimal_path"), # TEMP AREA FOR OPTIMIZATION OUTPUT
       
       dataTableOutput("data"), # LIST OF DATA FROM IMPORT FILE
       p() # BE SURE TO ADD A COMMA (,) TO THE END OF THIS IF PLOT ENABLED
@@ -194,14 +185,17 @@ server <- function(input, output, session) {
       inner_join(locations, by = c("idx_val" = "id"))
     
     # CREATE PLOT OF PATH TO TAKE TO VISIT ALL LOCATIONS ONLY ONCE AT LOWEST COST
-    output$optimal_path <- renderPlot({ 
+    output$optimal_path <- renderPlot({
       ggplot(locations, aes(x, y)) + 
-        geom_point(size=5) + 
+        geom_point(size=5)  + 
+        geom_point(data = locations %>% filter(loc_name == "Benson Hotel"), color = "red", size=5) +
         geom_text(data = locations, aes(label = loc_name), hjust = 0.75,  
                   vjust = -1) +
         geom_line(data = paths, aes(group = trip_id)) + 
-        ggtitle(paste0("Optimal route with cost: ", 
-                       round(objective_value(result), 2)))
+        ggtitle("Optimal Route by Distance from the Benson Hotel for Filtered Locations")
+      
+      #          ggtitle(paste0("Optimal route with cost: ", 
+      #                 round(objective_value(result), 2)))
     })
     
     output$data <- renderDataTable({
@@ -247,26 +241,61 @@ server <- function(input, output, session) {
   # ASSOCIATED WITH THE INTEREST SELECTION VALUES IN THE USER INTERFACE
   observeEvent(input$interests, {
     
-    #m <- refined_locations
-
-    #m <- subset(refined_locations, subset=(Cost>1))
+    #refined_locations <- tourist_locations
     
     output$text <- renderText({ 
       input$interests 
     })
     
-    #output$data <- renderDataTable({
-      #refined_locations
-      #m
-    #})
+    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,3]))
+    })
+    
+    output$data <- renderDataTable({
+      refined_locations
+    })
       
   })
   
   # ASSOCIATED WITH THE INTEREST SELECTION VALUES IN THE USER INTERFACE
   observeEvent(input$locations, {
     
+    #refined_locations <- tourist_locations
+    
     output$text <- renderText({ 
       input$locations 
+    })
+    
+    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,3]))
+    })
+    
+    output$data <- renderDataTable({
+      refined_locations
     })
     
   })
@@ -277,14 +306,8 @@ server <- function(input, output, session) {
 #    refined_locations <<- tourist_locations
 #    refined_locations <<- subset(refined_locations, 
 #                                 subset=(OpenTime <= input$start_time
-#                                         & CloseTime >= e_time
-#                                         & Cost <= total_budget))
-    
-#    output$data <- renderDataTable({
-#      refined_locations
-#    })
-    
-#    s_time <<- input$start_time
+#                                         & CloseTime >= input$end_time
+#                                         & Cost <= input$budget))
     
     # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
     output$mymap <- renderLeaflet({
@@ -313,13 +336,10 @@ server <- function(input, output, session) {
   observeEvent(input$end_time, {
 
 #    refined_locations <<- tourist_locations
-    
 #    refined_locations <<- subset(refined_locations, 
 #                                 subset=(CloseTime >= input$end_time
-#                                         & OpenTime <= s_time
-#                                         & Cost <= total_budget))
-    
-#    e_time <<- input$end_time
+#                                         & OpenTime <= input$start_time
+#                                         & Cost <= input$budget))
     
     # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
     output$mymap <- renderLeaflet({
@@ -404,6 +424,10 @@ server <- function(input, output, session) {
     # RESET THE DATA TABLE
     output$data <- renderDataTable({
       refined_locations
+    })
+    
+    output$optimal_path <- renderPlot({
+      
     })
     
   })
