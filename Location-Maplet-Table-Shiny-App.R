@@ -6,25 +6,40 @@
 
 library(shiny)
 library(leaflet)
+
+suppressPackageStartupMessages(library(tinytex))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ROI))
+suppressPackageStartupMessages(library(ROI.plugin.glpk))
+suppressPackageStartupMessages(library(ompr))
+suppressPackageStartupMessages(library(ompr.roi))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
 #library(DT)
 
 setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
 
-tourist_locations <- read.csv("portland_location_data.csv") # LOAD DATA FROM FILE
+#tourist_locations <- read.csv("portland_location_data_2.csv") # LOAD FROM FILE
+tourist_locations <- read.csv("TEST_portland_location_data_2.csv")
+
+# USE THE LAST ROW IN THE DATA FILE FOR THE STARTING LOCATION
+start_location <- tail(tourist_locations, n = 1)
+colnames(start_location) <- colnames(tourist_locations)
 
 # USE MEANINGFUL NAMES FOR THE DATA COLUMNS
 colnames(tourist_locations) <- c("Attraction", 
-                                 "InPDX", 
+                                 #"InPDX", 
                                  "Cost",
                                  "Address",
-                                 "DistanceFromDT",
+                                 #"DistanceFromDT",
                                  "OpenTime",
                                  "CloseTime",
-                                 "latitude",
-                                 "longitude",
+                                 "Latitude",
+                                 "Longitude",
                                  "Classification")
 
-# JUST A TEMP LOCATION IN CASE WE NEED TO CHANGE THE SOURCE DATA MATRIX
+# JUST A TEMP LOCATION TO FILTER THE SOURCE DATA MATRIX BY USER SELECTIONS
 refined_locations <- tourist_locations
 
 # USER INTERFACE SECTION DEFINITION
@@ -41,8 +56,8 @@ ui <- fluidPage(
       
       # USER BUDGET
       sliderInput(inputId = "budget" ,
-                  label="What is your budget?:",
-                  value = 40, min=0, max=200),
+                  label="What is your budget per location?:",
+                  value = 50, min=0, max=50),
     
       # USER CATEGORY INTERESTS - CAN SELECT MULTIPLE OPTIONS
       selectInput("interests", "Choose the areas that you are interested in:",
@@ -67,32 +82,38 @@ ui <- fluidPage(
                   refined_locations[,1], selected = NULL, multiple = TRUE,
                   selectize = TRUE, width = NULL, size = NULL),
       
-      # USER START TIME AVAILABLE - 24 HOUR CLOCK
-      numericInput("start_time", "Start Time (24 Hour)", 1200),
-      
-      # USER END TIME AVAILABLE - 24 HOUR CLOCK
-      numericInput("end_time", "End Time (24 Hour)", 2100),
-      
-      # EXAMPLE SELECTION TYPES
-      #numericInput("min", "Minimum", 0),
-      #numericInput("max", "Maximum", 100),
-      #sliderInput("n", "n", min = 0, max = 100, value = 50),
-      
-      #plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
-      
+      sliderInput(inputId = "start_time" ,
+                  label="Start Time (24 Hr)?",
+                  value = 100, min=0, step=100, max=2400, sep=""),
+
+      sliderInput(inputId = "end_time" ,
+            label="End Time (24 Hr)?",
+            value = 2400, min=0, step=100, max=2400, sep=""),
+
+      # RESET ALL INPUT VALUES TO DEFAULT
       actionButton("reset_input", "Reset"),
-      actionButton("run_model", "RUN MODEL")
+      
+      # RUN THE DATA THROUGH THE OPTIMIZATION TSP MODEL
+      actionButton("run_model", "RUN MODEL"),
+      
+      # BLANK ROW SPACE
+      p(),
+      
+      # TEMP AREA TO OUTPUT TEXT MESSAGES
+      textOutput("text"),
+      
+      # PLACE THE PLOT FROM THE OPTIMIZATION MODEL ONTO THE SHINY SCREEN
+      plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
+      
     ),
     
     # CREATE MAIN DATA OUTPUT AREA
-    # NEED FUNCTION TO UPDATE DATA ON SELECTIONS IN SIDEBARPANEL()
     mainPanel (
       leafletOutput("mymap", height=600), # MAP OF TOURIST ATTRACTION LOCATIONS
       p(),
+      
       dataTableOutput("data"), # LIST OF DATA FROM IMPORT FILE
       p() # BE SURE TO ADD A COMMA (,) TO THE END OF THIS IF PLOT ENABLED
-      #plotOutput("optimal_path") # TEMP AREA FOR OPTIMIZATION OUTPUT
-      
     )
     
   ) # END sidebarLayout()
@@ -103,58 +124,260 @@ ui <- fluidPage(
 # MAIN CODE TO GENERATE DATA TO SEND TO THE USER INTERFACE SECTION
 server <- function(input, output, session) {
   
-  # DEFINE AND RUN THE OPTIMIZATION MODEL HERE <- <- <- <-
-  #
-  # NEED TO HAVE THE AVERAGE TIME SPENT AT EACH LOCATION
-  #
-  #
-  # SET REFINED LOCATION MATRIX VALUES AFTER PROCESSED
+  # ACTIONS TO TAKE WHEN THE USER PRESSES THE RUN MODEL BUTTON IN THE UI
+  observeEvent(input$run_model, {
+    
+    n <- nrow(refined_locations) # NUMBER OF TOTAL LOCATIONS TO VISIT
 
-  # ASSOCIATED WITH THE MIN SLIDER VALUE IN THE USER INTERFACE
-  observeEvent(input$min, {
-    updateSliderInput(inputId = "n", min = input$min)
-  })
-  
-  # ASSOCIATED WITH THE MAX SLIDER VALUE IN THE USER INTERFACE
-  observeEvent(input$max, {
-    updateSliderInput(inputId = "n", max = input$max)
+    # LONGITUDE = x, LATUTUDE = y
+    locations <- data.frame(id = 1:n, x = refined_locations[,7], 
+                            y = refined_locations[,6], 
+                            loc_name = refined_locations[,1])
+    
+    starting_pt <- data.frame(id = 1:n, x = start_location[,7], 
+                            y = start_location[,6])
+    
+    #attraction_costs <- data.frame(id = 1:n, loc_cost = refined_locations[,2])
+    
+    distance <- as.matrix(stats::dist(select(locations, x, y), 
+                                      diag = TRUE, upper = TRUE))
+    dist_fun <- function(i, j) {
+      vapply(seq_along(i), function(k) distance[i[k], j[k]] 
+             , numeric(1L))
+    }
+    
+    model <- MIPModel() %>%
+      # WE CREATE A VAR THAT IS 1 IFF WE TRAVEL FROM LOC i to j
+      add_variable(x[i, j], i = 1:n, j = 1:n, 
+                   type = "integer", lb = 0, ub = 1) %>%
+
+      # HELPER VAR FOR THE MTZ FORMULATION OF THE TSP
+      add_variable(u[i], i = 1:n, lb = 1, ub = n) %>% 
+      
+      # MINIMIZE THE TRAVEL DISTANCE
+      set_objective(sum_expr(dist_fun(i, j) * x[i, j], i = 1:n, j = 1:n)
+                    , "min") %>%
+      
+      # YOU CAN ONLY VISIT A LOCATION ONE TIME, NO REPEATS
+      set_bounds(x[i, i], ub = 0, i = 1:n) %>%
+      
+      # MUST LEAVE EACH LOCATION
+      add_constraint(sum_expr(x[i, j], j = 1:n) == 1, i = 1:n) %>%
+      
+      # VISIT EACH LOCATION
+      add_constraint(sum_expr(x[i, j], i = 1:n) == 1, j = 1:n) %>%
+      
+      # ENSURE THAT NO SUB-BRANCHES ARE USED
+      add_constraint(u[i] >= 2, i = 2:n) %>% 
+      add_constraint(u[i] - u[j] + 1 <= (n - 1) * (1 - x[i, j]), i = 2:n, j = 2:n)
+    
+    result <- solve_model(model, with_ROI(solver = "glpk", verbose = TRUE))
+    
+    solution <- get_solution(result, x[i, j]) %>% 
+      filter(value > 0) 
+    
+    # BUILD PATHS FOR EACH VISIT TO EACH LOCATION
+    paths <- select(solution, i, j) %>% 
+      rename(from = i, to = j) %>% 
+      mutate(trip_id = row_number()) %>% 
+      tidyr::gather(property, idx_val, from:to) %>% 
+      mutate(idx_val = as.integer(idx_val)) %>% 
+      inner_join(locations, by = c("idx_val" = "id"))
+    
+    # CREATE PLOT OF PATH TO TAKE TO VISIT ALL LOCATIONS ONLY ONCE AT LOWEST COST
+    output$optimal_path <- renderPlot({
+      ggplot(locations, aes(x, y)) + 
+        geom_point(size=5)  + 
+        geom_point(data = locations %>% filter(loc_name == "Benson Hotel"), color = "red", size=5) +
+        geom_text(data = locations, aes(label = loc_name), hjust = 0.75,  
+                  vjust = -1) +
+        geom_line(data = paths, aes(group = trip_id)) + 
+        ggtitle("Optimal Route by Distance from the Benson Hotel for Filtered Locations")
+      
+      #          ggtitle(paste0("Optimal route with cost: ", 
+      #                 round(objective_value(result), 2)))
+    })
+    
+    output$data <- renderDataTable({
+      refined_locations
+    })
+    
   })
   
   # ASSOCIATED WITH THE BUDGET SLIDER VALUE IN THE USER INTERFACE
   observeEvent(input$budget, {
-    #
+    
+    refined_locations <<- tourist_locations
+    refined_locations <<- subset(refined_locations, subset=(Cost<=input$budget))
+    
+    # ENSURE THAT THE STARTING LOCATION IS ALWAYS IN THE LIST
+    colnames(start_location) <- colnames(tourist_locations)
+    refined_locations <<- rbind(refined_locations, start_location)
+    
+    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,3]))
+    })
+    
+    output$data <- renderDataTable({
+      refined_locations
+    })
+    
+    total_budget <<- input$budget
   })
   
   # ASSOCIATED WITH THE INTEREST SELECTION VALUES IN THE USER INTERFACE
   observeEvent(input$interests, {
-    #
+    
+    #refined_locations <- tourist_locations
+    
+    output$text <- renderText({ 
+      input$interests 
+    })
+    
+    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,3]))
+    })
+    
+    output$data <- renderDataTable({
+      refined_locations
+    })
+      
   })
   
   # ASSOCIATED WITH THE INTEREST SELECTION VALUES IN THE USER INTERFACE
   observeEvent(input$locations, {
-    #
+    
+    #refined_locations <- tourist_locations
+    
+    output$text <- renderText({ 
+      input$locations 
+    })
+    
+    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,3]))
+    })
+    
+    output$data <- renderDataTable({
+      refined_locations
+    })
+    
   })
   
   # ASSOCIATED WITH THE START TIME VALUE IN THE USER INTERFACE
   observeEvent(input$start_time, {
-    #
+    
+#    refined_locations <<- tourist_locations
+#    refined_locations <<- subset(refined_locations, 
+#                                 subset=(OpenTime <= input$start_time
+#                                         & CloseTime >= input$end_time
+#                                         & Cost <= input$budget))
+    
+    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,3]))
+    })
+    
+    # UPDATE THE LIST OF ATTRACTIONS TABLE
+    output$data <- renderDataTable({
+      refined_locations
+    })
+    
   })
   
   # ASSOCIATED WITH THE END TIME VALUE IN THE USER INTERFACE
   observeEvent(input$end_time, {
-    #
-  })
-  
-  # RUN THE MODEL - UPDATE THE MAP AND LIST TO SHOW RESULTS
-  observeEvent(input$run_model, {
-    #
+
+#    refined_locations <<- tourist_locations
+#    refined_locations <<- subset(refined_locations, 
+#                                 subset=(CloseTime >= input$end_time
+#                                         & OpenTime <= input$start_time
+#                                         & Cost <= input$budget))
+    
+    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
+    output$mymap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
+                   label = as.character(refined_locations[,1]), 
+                   popup = as.character(refined_locations[,3]))
+    })
+    
+    # UPDATE LIST OF ATTRACTIONS TABLE
+    output$data <- renderDataTable({
+      refined_locations
+    })
+
   })
   
   # RESET ALL FORM INPUT AND OUTPUT ELEMENTS TO DEFAULTS
   observeEvent(input$reset_input, {
+    
+    s_time <<- 100
+    e_time <<- 2400
+    total_budget <<- 50
+    
+    # RESET THE FILTERED MATRIX TO THE FULL DATA SET MATRIX
+    refined_locations <<- tourist_locations
+    
     updateSliderInput(session, inputId = "budget" ,
                 label="What is your budget?:",
-                value = 40, min=0, max=200)
+                value = 50, min=0, max=50)
+    
     updateSelectInput(session, "interests", "Choose the areas that you are 
                       interested in:",
                 choices=list(`Interests` = list(
@@ -172,27 +395,39 @@ server <- function(input, output, session) {
                   "Theatre",
                   "Landmark",
                   "Recreational")), selected = NULL)
+    
     updateSelectInput(session, "locations", "Choose Specific Locations:", 
                 choices=refined_locations[,1], selected = NULL)
+    
     updateNumericInput(session, "start_time", label="Start Time (24 Hour)", 
-                       value=1200)
+                       value=100)
+    
     updateNumericInput(session, "end_time", label="End Time (24 Hour)", 
-                       value=2100)
+                       value=2400)
     
     # RESET THE LEAFLET MAP
     output$mymap <- renderLeaflet({
       leaflet() %>%
         addTiles() %>%
         setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addMarkers(lng = refined_locations[,9], 
-                   lat = refined_locations[,8], 
+        addCircleMarkers(lng = start_location[,7],
+                         lat = start_location[,6],
+                         label = as.character(start_location[,1]),
+                         popup = as.character(start_location[,3]),
+                         color = "red") %>%
+        addMarkers(lng = refined_locations[,7], 
+                   lat = refined_locations[,6], 
                    label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,4]))
+                   popup = as.character(refined_locations[,3]))
     })
     
     # RESET THE DATA TABLE
     output$data <- renderDataTable({
       refined_locations
+    })
+    
+    output$optimal_path <- renderPlot({
+      
     })
     
   })
@@ -202,10 +437,15 @@ server <- function(input, output, session) {
     leaflet() %>%
     addTiles() %>%
     setView(-122.6792634, 45.51867737, zoom = 14) %>%
-    addMarkers(lng = refined_locations[,9], 
-               lat = refined_locations[,8], 
-               label = as.character(refined_locations[,1]), 
-               popup = as.character(refined_locations[,4]))
+      addCircleMarkers(lng = start_location[,7],
+                       lat = start_location[,6],
+                       label = as.character(start_location[,1]),
+                       popup = as.character(start_location[,3]),
+                       color = "red") %>%
+      addMarkers(lng = refined_locations[,7], 
+                 lat = refined_locations[,6], 
+                 label = as.character(refined_locations[,1]), 
+                 popup = as.character(refined_locations[,3]))
   })
 
   # OUTPUT THE CONTENTS OF THE refined_locations MATRIX IN A TABLE
@@ -213,26 +453,6 @@ server <- function(input, output, session) {
   output$data <- renderDataTable({
     refined_locations
   })
-
-
-  
-  # A PLOT OF FIXED SIZE - TEMP AREA - INTO "optimal_path" AREA IN THE UI
-  output$optimal_path <- renderImage({
-    # A temp file to save the output. It will be deleted after renderImage
-    # sends it, because deleteFile=TRUE.
-    outfile <- tempfile(fileext='.png')
-    
-    # Generate a png
-    png(outfile, width=400, height=400)
-    
-    # TEMP - PRINT SIMPLE HISTOGRAM
-    hist(rnorm(input$n))
-    dev.off()
-    
-    # Return a list
-    list(src = outfile,
-         alt = "This is alternate text")
-  }, deleteFile = TRUE)
   
 } # END SERVER
 
