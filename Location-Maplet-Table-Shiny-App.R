@@ -6,7 +6,6 @@
 
 library(shiny)
 library(leaflet)
-
 suppressPackageStartupMessages(library(tinytex))
 suppressPackageStartupMessages(library(magrittr))
 suppressPackageStartupMessages(library(dplyr))
@@ -29,10 +28,8 @@ colnames(start_location) <- colnames(tourist_locations)
 
 # USE MEANINGFUL NAMES FOR THE DATA COLUMNS
 colnames(tourist_locations) <- c("Attraction", 
-                                 #"InPDX", 
                                  "Cost",
                                  "Address",
-                                 #"DistanceFromDT",
                                  "OpenTime",
                                  "CloseTime",
                                  "Latitude",
@@ -42,11 +39,13 @@ colnames(tourist_locations) <- c("Attraction",
 # JUST A TEMP LOCATION TO FILTER THE SOURCE DATA MATRIX BY USER SELECTIONS
 refined_locations <- tourist_locations
 
+time_avail <- 24 # TOTAL TIME IN 1 DAY THAT TOURIST HAS TO VISIT ATTRACTIONS
+
 # USER INTERFACE SECTION DEFINITION
 ui <- fluidPage(
   
   # APPLICATION TITLE
-  titlePanel("Attractions in Portland Oregon"),
+  titlePanel("Tourist Attractions in Portland Oregon"),
   
   # CREATE A SIDEBAR SECTION
   sidebarLayout(  
@@ -84,11 +83,11 @@ ui <- fluidPage(
       
       sliderInput(inputId = "start_time" ,
                   label="Start Time (24 Hr)?",
-                  value = 100, min=0, step=100, max=2400, sep=""),
+                  value = 1, min=1, step=1, max=24, sep=""),
 
       sliderInput(inputId = "end_time" ,
             label="End Time (24 Hr)?",
-            value = 2400, min=0, step=100, max=2400, sep=""),
+            value = 24, min=1, step=1, max=24, sep=""),
 
       # RESET ALL INPUT VALUES TO DEFAULT
       actionButton("reset_input", "Reset"),
@@ -134,13 +133,14 @@ server <- function(input, output, session) {
                             y = refined_locations[,6], 
                             loc_name = refined_locations[,1])
     
+    #time_required <- data.frame(id=1:n, time_req = refined_locations[,6])
+    
     starting_pt <- data.frame(id = 1:n, x = start_location[,7], 
                             y = start_location[,6])
     
-    #attraction_costs <- data.frame(id = 1:n, loc_cost = refined_locations[,2])
-    
     distance <- as.matrix(stats::dist(select(locations, x, y), 
                                       diag = TRUE, upper = TRUE))
+    
     dist_fun <- function(i, j) {
       vapply(seq_along(i), function(k) distance[i[k], j[k]] 
              , numeric(1L))
@@ -150,11 +150,11 @@ server <- function(input, output, session) {
       # WE CREATE A VAR THAT IS 1 IFF WE TRAVEL FROM LOC i to j
       add_variable(x[i, j], i = 1:n, j = 1:n, 
                    type = "integer", lb = 0, ub = 1) %>%
-
+      
       # HELPER VAR FOR THE MTZ FORMULATION OF THE TSP
       add_variable(u[i], i = 1:n, lb = 1, ub = n) %>% 
       
-      # MINIMIZE THE TRAVEL DISTANCE
+      # MINIMIZE THE TRAVEL DISTANCE WITH THE TIME AVAILABLE
       set_objective(sum_expr(dist_fun(i, j) * x[i, j], i = 1:n, j = 1:n)
                     , "min") %>%
       
@@ -188,11 +188,12 @@ server <- function(input, output, session) {
     output$optimal_path <- renderPlot({
       ggplot(locations, aes(x, y)) + 
         geom_point(size=5)  + 
-        geom_point(data = locations %>% filter(loc_name == "Benson Hotel"), color = "red", size=5) +
+        geom_point(data = locations %>% filter(loc_name == "Benson Hotel"), 
+                   color = "red", size=5) +
         geom_text(data = locations, aes(label = loc_name), hjust = 0.75,  
                   vjust = -1) +
         geom_line(data = paths, aes(group = trip_id)) + 
-        ggtitle("Optimal Route by Distance from the Benson Hotel for Filtered Locations")
+        ggtitle("Optimal Travel Route by Distance from the Benson Hotel for Filtered Locations")
       
       #          ggtitle(paste0("Optimal route with cost: ", 
       #                 round(objective_value(result), 2)))
@@ -210,9 +211,15 @@ server <- function(input, output, session) {
     refined_locations <<- tourist_locations
     refined_locations <<- subset(refined_locations, subset=(Cost<=input$budget))
     
+    #refined_locations <- filter(refined_locations, input$start_time >= OpenTime, input$end_time <= CloseTime)
+    
     # ENSURE THAT THE STARTING LOCATION IS ALWAYS IN THE LIST
     colnames(start_location) <- colnames(tourist_locations)
     refined_locations <<- rbind(refined_locations, start_location)
+    
+    #observe(print(input$start_time))
+    #observe(print(input$end_time))
+    #observe(print(refined_locations))
     
     # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
     output$mymap <- renderLeaflet({
@@ -302,74 +309,24 @@ server <- function(input, output, session) {
   
   # ASSOCIATED WITH THE START TIME VALUE IN THE USER INTERFACE
   observeEvent(input$start_time, {
-    
-#    refined_locations <<- tourist_locations
-#    refined_locations <<- subset(refined_locations, 
-#                                 subset=(OpenTime <= input$start_time
-#                                         & CloseTime >= input$end_time
-#                                         & Cost <= input$budget))
-    
-    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
-    output$mymap <- renderLeaflet({
-      leaflet() %>%
-        addTiles() %>%
-        setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addCircleMarkers(lng = start_location[,7],
-                         lat = start_location[,6],
-                         label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,3]),
-                         color = "red") %>%
-        addMarkers(lng = refined_locations[,7], 
-                   lat = refined_locations[,6], 
-                   label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,3]))
-    })
-    
-    # UPDATE THE LIST OF ATTRACTIONS TABLE
-    output$data <- renderDataTable({
-      refined_locations
-    })
+
+    time_avail <<- input$end_time - input$start_time
+    if (time_avail < 0) {time_avail = 0}
+    #observe(print(time_avail))
     
   })
   
   # ASSOCIATED WITH THE END TIME VALUE IN THE USER INTERFACE
   observeEvent(input$end_time, {
-
-#    refined_locations <<- tourist_locations
-#    refined_locations <<- subset(refined_locations, 
-#                                 subset=(CloseTime >= input$end_time
-#                                         & OpenTime <= input$start_time
-#                                         & Cost <= input$budget))
     
-    # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
-    output$mymap <- renderLeaflet({
-      leaflet() %>%
-        addTiles() %>%
-        setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addCircleMarkers(lng = start_location[,7],
-                         lat = start_location[,6],
-                         label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,3]),
-                         color = "red") %>%
-        addMarkers(lng = refined_locations[,7], 
-                   lat = refined_locations[,6], 
-                   label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,3]))
-    })
+    time_avail <<- input$end_time - input$start_time
+    if (time_avail < 0) {time_avail = 0}
+    #observe(print(time_avail))
     
-    # UPDATE LIST OF ATTRACTIONS TABLE
-    output$data <- renderDataTable({
-      refined_locations
-    })
-
   })
   
   # RESET ALL FORM INPUT AND OUTPUT ELEMENTS TO DEFAULTS
   observeEvent(input$reset_input, {
-    
-    s_time <<- 100
-    e_time <<- 2400
-    total_budget <<- 50
     
     # RESET THE FILTERED MATRIX TO THE FULL DATA SET MATRIX
     refined_locations <<- tourist_locations
@@ -400,10 +357,10 @@ server <- function(input, output, session) {
                 choices=refined_locations[,1], selected = NULL)
     
     updateNumericInput(session, "start_time", label="Start Time (24 Hour)", 
-                       value=100)
+                       value=1)
     
     updateNumericInput(session, "end_time", label="End Time (24 Hour)", 
-                       value=2400)
+                       value=24)
     
     # RESET THE LEAFLET MAP
     output$mymap <- renderLeaflet({
@@ -459,4 +416,3 @@ server <- function(input, output, session) {
 
 # INIT THE SHINY APPLICATION
 shinyApp(ui, server)
-
