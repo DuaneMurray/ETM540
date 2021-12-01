@@ -17,13 +17,23 @@ suppressPackageStartupMessages(library(ompr.roi))
 suppressPackageStartupMessages(library(pander))
 library(tidyverse)
 library(knitr)
-#library(dplyr)
 library(ggplot2)
 ```
+Data:
+Open Time of the Attraction
+Close Time of the Attraction
+Cost of the Attraction
+
+Variables:
+
+User Input:
+Attraction Selected
+Time to start tour
+Time to end tour
 
 
 **Miller-Tucker-Zemlin (MTZ) formulation for Traveling Salesperson Problem (TSP)**
-
+$$
 \begin{align}
 \text{min} \quad & \sum_{i = 1}^{n} \sum_{j = 1, j \neq i}^{n} c_{ij} x_{ij}, \\
 \text{subject to} \\
@@ -33,25 +43,19 @@ library(ggplot2)
 & x_{ij} \in \{0,1\} \quad i, j =1,2,…,n, \quad i \neq j, \\
 & u_i \in \mathbb{R}^+ \quad i=1,2,…,n.
 \end{align}
+$$
 
 **Base Traveling Salesman Problem ompr Model Code to Work From**
 ```{r Base-MTZ-Based-TSP-Model}
 
 setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
 
-refined_locations <- read.csv("TEST_portland_location_data.csv") # LOAD DATA FROM FILE
+refined_locations <- read.csv("TEST_portland_location_data_2.csv") # LOAD DATA FROM FILE
 
 n <- nrow(refined_locations) # NUMBER OF LOCATIONS TO VISIT (replace with number of data matrix rows)
-#n <- 10
-  
-# from 0 to ...
-#max_x <- 500
-#max_y <- 500
-#set.seed(2451)
 
 #Longitude = x, Latitude = y
-locations <- data.frame(id = 1:n, x = refined_locations[,9], y = refined_locations[,8])
-#cities <- data.frame(id = 1:n, x = runif(n, max = max_x), y = runif(n, max = max_y))
+locations <- data.frame(id = 1:n, x = refined_locations[,7], y = refined_locations[,6])
 
 pander(locations)
 
@@ -63,8 +67,6 @@ dist_fun <- function(i, j) {
   vapply(seq_along(i), function(k) distance[i[k], j[k]], numeric(1L))
 }
 
-# MIPModel() is standard method
-# MILPmodel() is beta, and purported as 1000 times faster than MIP
 model <- MIPModel() %>%
   # we create a variable that is 1 iff we travel from location i to j
   add_variable(x[i, j], i = 1:n, j = 1:n, 

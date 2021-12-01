@@ -1,53 +1,53 @@
-Attraction,Cost,Attraction Address ,Open Time,Close Time,Latitude,Longitude,Classification
-International Rose Garden ,2.00," 400 SW Kingston Ave, Portland, OR 97205",1000,1530,45.520432,-122.706772,"eco, scenic, adventure"
-Japanese Garden,16.95,"611 SW Kingston Ave, Portland, OR 97205",500,2200,45.518139,-122.708771,"eco, scenic, adventure"
-Oregon Zoo,24.00,"4001 SW Canyon Rd, Portland, OR 97221",900,1730,45.50928256,-122.7159482,"eco, scenic, adventure"
-Pittock Mansion ,12.00,"3229 NW Pittock Drive, Portland, Oregon",1000,1600,45.52540223,-122.7163622,"architecture, history"
-Powell's City of Books,5.00,"1005 W Burnside St, Portland, OR 97209",1000,2100,45.52320581,-122.6813512,shopping
-Oregon Musume of Science and Industry ,12.00,"1945 SE Water Ave, Portland, OR 97214",930,1730,45.5084765,-122.6660565,"science, adventure"
-Lan Su Chinese Garden,12.95,"239 NW Everett St, Portland, OR 97209",1000,1600,45.52564403,-122.6730167,"landmark, eco"
-Forest Park,0.00,"4099 NW Thurman St, Portland, OR 97210",500,2200,45.53995879,-122.7248706,eco
-Portlandia,0.00,"1120 SW 5th Ave, Portland, OR 97255",0,2400,45.51580896,-122.6788705,"history, landmark"
-Mt. Tabor Stairs,0.00,"6738 Mt Tabor, Portland, OR 97215",500,1,45.51571016,-122.5922171,"history, landmark"
-Mt. Tabor Park,0.00,"SE 60th Ave &, SE Salmon St, Portland, OR 97215",500,0,45.51405604,-122.5987276,landmark
-St. Johns Bridge,0.00,"8600 NW Bridge Ave, Portland, OR 97203",0,2400,45.58343974,-122.7690292,"history, landmark"
-Joan of Arc,0.00,"418-426 NE Cesar E Chavez Blvd, Portland, OR 97232 ",0,2400,45.52612701,-122.6227313,"history, landmark"
-Tilikum Crossing: Bridge of the People,0.00,"Tilikum Crossing, Portland, OR 97214",0,2400,45.50565294,-122.6660294,"history, landmark"
-Paul Bunyan Statue,0.00,"8433 N Interstae Ave, Portland, OR 97217",0,2400,45.58448608,-122.6871262,"history, landmark"
-Portland Oregon White Stag Sign,0.00,"70 NW Couch St, Portland, OR 97209",0,2400,45.52354016,-122.6709619,"history, landmark"
-The Lorax Houses,0.00,"N Albina Ave & Beech St, Portland, OR 97227",0,2400,45.54974349,-122.6743995,"history, landmark"
-Japanese American Historical Plaza,0.00,"2 NW Naito Parkway, Portland, OR 97209",0,2400,45.52318533,-122.6702347,"history, landmark"
-Lovejoy Columns,0.00,"316 NW 10th Ave, Portland, OR 97209",0,2400,45.52561799,-122.68095,"history, landmark"
-Centenial Mills,0.00,"1362 NW Naito Pkwy, Portland, OR 97209",0,2400,45.53401403,-122.6807801,"history, landmark"
-Animals In Pools,0.00,"SW Yamhill St & SW 5th Ave, Portland, OR 97204",0,2400,45.51825113,-122.6779626,"history, landmark"
-The Quest,0.00,"900 SW 5th Ave, Portland, OR 97204",0,2400,45.51731891,-122.6781128,"history, landmark"
-The Buddha Building,0.00,"312 NW 10th Ave, Portland, OR 97209",0,2400,45.52556573,-122.6810646,"history, landmark"
-Old Town Chinatown,0.00,"13 NW 4th Ave, Portland, OR 97209",0,2400,45.52332542,-122.6743102,"history, landmark"
-Oregon Holocaust Memorial,0.00,"95205 SW Washington Way, Portland, OR 97205",500,2200,45.52295863,-122.7033398,"history, landmark"
-Teachers Fountain,0.00,"815 SW Park Ave, Portland, OR 97205",0,2400,45.51892373,-122.681266,"history, landmark"
-Beverly Cleary Sculpture Garden at Grant Park,0.00,"Grant Park Path, Portland, OR 97212",500,0,45.54026386,-122.6301575,"history, landmark"
-Share-It Square,0.00,"9th Ave And SE Sherret St, Portland, OR 97202",0,2400,45.46149353,-122.6569777,"history, landmark"
-Portland Spirit Cruises &Events,50.00,"110 SE Caruthers St, Portland, OR 97214",900,1900,45.50592059,-122.6645405,eco
-World Forestry Center Discovery Museum,5.00,"4033 SW Canyon Rd, Portland, OR 97221",900,1700,45.5107982,-122.7179503,eco
-The Grotto,0.00,"8840 NE Skidmore St, Portland, OR 97220",900,1730,45.55324101,-122.5735328,"history, landmark"
-Shanghai Tunnels,0.00,"120 NW 3rd Ave, Portland, OR 97209",1100,2200,45.52451779,-122.6726939,"history, landmark"
-Hoyt Arboretum,0.00,"4000 SW Fairview Blvd, Portland, OR 97221",500,2200,45.51583415,-122.7152427,eco
-Tom McCall Waterfront Park,0.00,"98 SW Naito Pkwy, Portland, OR 97204",0,2400,45.52149064,-122.6699479,"eco, landmark"
-Portland Art Museum,25.00,"1219 SW Park Ave, Portland, OR 97205",1000,1700,45.51630688,-122.6833193,"art, history"
-Pioneer Courthouse Square,0.00,"701 SW 6th Ave, Portland, OR 97205",0,2400,45.51867737,-122.6792634,landmark
-Oregon Historical Society Museum,10.00,"1200 SW Park Ave, Portland, OR 97205",1200,1700,45.5158065,-122.682324,history
-Mill Ends Park,0.00,"56 SW Taylor St, Portland, OR 97204",0,2400,45.51634843,-122.6728993,landmark
-Portland Saturday Market,0.00,"2 SW Naito Pkwy, Portland, OR 97204",1000,1700,45.52276662,-122.6697254,"shopping, festival, foodie"
-Downtown Park Blocks,0.00,"1436 SW Park Ave, Portland, OR 97201",0,2400,45.51451006,-122.6829461,landmark
-National Hat Museum,5.00,"1928 SE Ladd Ave, Portland, OR 97214",1000,1700,45.50947496,-122.6498082,history
-Providence Park,0.00,"1844 SW Morrison St, Portland, OR 97205",0,2400,45.5218655,-122.6908498,sports
-Portland Aerial Tram,10.00,"3303 S Bond Ave, Portland, OR 97239",530,2130,45.49941144,-122.6708667,"adventure, scenic"
-Wishing Tree,0.00,"2954 NE 7th Ave, Portland, OR 97212",0,2400,45.54467021,-122.6582317,landmark
-Stark’s Vacuum Museum,0.00,"107 NE Grand Ave, Portland, OR 97232",900,1700,45.52399706,-122.6609825,history
-Lincoln Street Kayak & Canoe Museum,0.00,"5340 SE Lincoln St, Portland, OR 97215",900,1900,45.50792669,-122.6072095,"history, eco"
-Laurelhurst Park,0.00," SE Cesar E Chavez Blvd & Stark St, Portland, OR 97214",500,2230,45.51944584,-122.6230634,"history, eco, scenic"
-Kelley Point Park,0.00,"N Kelly Point Park Rd, Portland, OR 97203",600,2200,45.63757481,-122.7538917,"eco, scenic"
-Collin's Beach (Clothing Optional),0.00,"NW Reeder Rd, Portland, OR 97231",400,2200,45.65321377,-122.831583,"history, eco, scenic, portlandia "
-Powell Butte Nature Park,0.00,"16160 SE Powell Blvd, Portland, OR 97236",700,2000,45.4907,-122.497,"eco, scenic"
-Sellwood Riverfront Park,0.00,"1221 SE Oaks Park Way, Portland, OR 97202",500,1200,45.4668,-122.6634,"eco, scenic, landmark"
-Benson Hotel,500.00,"309 SW Broadway, Portland, OR 97205",0,2400,45.5216,-122.6787,"hotel"
+Attraction,Cost,Attraction Address ,Open Time,Close Time,TReq,Latitude,Longitude,Classification
+International Rose Garden ,2.00," 400 SW Kingston Ave, Portland, OR 97205",1000,1530,3,45.520432,-122.706772,"eco, scenic, adventure"
+Japanese Garden,16.95,"611 SW Kingston Ave, Portland, OR 97205",500,2200,3,45.518139,-122.708771,"eco, scenic, adventure"
+Oregon Zoo,24.00,"4001 SW Canyon Rd, Portland, OR 97221",900,1730,4,45.50928256,-122.7159482,"eco, scenic, adventure"
+Pittock Mansion ,12.00,"3229 NW Pittock Drive, Portland, Oregon",1000,1600,2,45.52540223,-122.7163622,"architecture, history"
+Powell's City of Books,5.00,"1005 W Burnside St, Portland, OR 97209",1000,2100,2,45.52320581,-122.6813512,shopping
+Oregon Musume of Science and Industry ,12.00,"1945 SE Water Ave, Portland, OR 97214",930,1730,4,45.5084765,-122.6660565,"science, adventure"
+Lan Su Chinese Garden,12.95,"239 NW Everett St, Portland, OR 97209",1000,1600,3,45.52564403,-122.6730167,"landmark, eco"
+Forest Park,0.00,"4099 NW Thurman St, Portland, OR 97210",500,2200,4,45.53995879,-122.7248706,eco
+Portlandia,0.00,"1120 SW 5th Ave, Portland, OR 97255",0,2400,1,45.51580896,-122.6788705,"history, landmark"
+Mt. Tabor Stairs,0.00,"6738 Mt Tabor, Portland, OR 97215",500,1,1,45.51571016,-122.5922171,"history, landmark"
+Mt. Tabor Park,0.00,"SE 60th Ave &, SE Salmon St, Portland, OR 97215",500,0,2,45.51405604,-122.5987276,landmark
+St. Johns Bridge,0.00,"8600 NW Bridge Ave, Portland, OR 97203",0,2400,1,45.58343974,-122.7690292,"history, landmark"
+Joan of Arc,0.00,"418-426 NE Cesar E Chavez Blvd, Portland, OR 97232 ",0,2400,1,45.52612701,-122.6227313,"history, landmark"
+Tilikum Crossing: Bridge of the People,0.00,"Tilikum Crossing, Portland, OR 97214",0,2400,1,45.50565294,-122.6660294,"history, landmark"
+Paul Bunyan Statue,0.00,"8433 N Interstae Ave, Portland, OR 97217",0,2400,1,45.58448608,-122.6871262,"history, landmark"
+Portland Oregon White Stag Sign,0.00,"70 NW Couch St, Portland, OR 97209",0,2400,1,45.52354016,-122.6709619,"history, landmark"
+The Lorax Houses,0.00,"N Albina Ave & Beech St, Portland, OR 97227",0,2400,2,45.54974349,-122.6743995,"history, landmark"
+Japanese American Historical Plaza,0.00,"2 NW Naito Parkway, Portland, OR 97209",0,2400,2,45.52318533,-122.6702347,"history, landmark"
+Lovejoy Columns,0.00,"316 NW 10th Ave, Portland, OR 97209",0,2400,2,45.52561799,-122.68095,"history, landmark"
+Centenial Mills,0.00,"1362 NW Naito Pkwy, Portland, OR 97209",0,2400,1,45.53401403,-122.6807801,"history, landmark"
+Animals In Pools,0.00,"SW Yamhill St & SW 5th Ave, Portland, OR 97204",0,2400,1,45.51825113,-122.6779626,"history, landmark"
+The Quest,0.00,"900 SW 5th Ave, Portland, OR 97204",0,2400,1,45.51731891,-122.6781128,"history, landmark"
+The Buddha Building,0.00,"312 NW 10th Ave, Portland, OR 97209",0,2400,1,45.52556573,-122.6810646,"history, landmark"
+Old Town Chinatown,0.00,"13 NW 4th Ave, Portland, OR 97209",0,2400,1,45.52332542,-122.6743102,"history, landmark"
+Oregon Holocaust Memorial,0.00,"95205 SW Washington Way, Portland, OR 97205",500,2200,1,45.52295863,-122.7033398,"history, landmark"
+Teachers Fountain,0.00,"815 SW Park Ave, Portland, OR 97205",0,2400,1,45.51892373,-122.681266,"history, landmark"
+Beverly Cleary Sculpture Garden at Grant Park,0.00,"Grant Park Path, Portland, OR 97212",500,0,2,45.54026386,-122.6301575,"history, landmark"
+Share-It Square,0.00,"9th Ave And SE Sherret St, Portland, OR 97202",0,2400,1,45.46149353,-122.6569777,"history, landmark"
+Portland Spirit Cruises &Events,50.00,"110 SE Caruthers St, Portland, OR 97214",900,1900,4,45.50592059,-122.6645405,eco
+World Forestry Center Discovery Museum,5.00,"4033 SW Canyon Rd, Portland, OR 97221",900,1700,3,45.5107982,-122.7179503,eco
+The Grotto,0.00,"8840 NE Skidmore St, Portland, OR 97220",900,1730,3,45.55324101,-122.5735328,"history, landmark"
+Shanghai Tunnels,0.00,"120 NW 3rd Ave, Portland, OR 97209",1100,2200,4,45.52451779,-122.6726939,"history, landmark"
+Hoyt Arboretum,0.00,"4000 SW Fairview Blvd, Portland, OR 97221",500,2200,2,45.51583415,-122.7152427,eco
+Tom McCall Waterfront Park,0.00,"98 SW Naito Pkwy, Portland, OR 97204",0,2400,2,45.52149064,-122.6699479,"eco, landmark"
+Portland Art Museum,25.00,"1219 SW Park Ave, Portland, OR 97205",1000,1700,3,45.51630688,-122.6833193,"art, history"
+Pioneer Courthouse Square,0.00,"701 SW 6th Ave, Portland, OR 97205",0,2400,1,45.51867737,-122.6792634,landmark
+Oregon Historical Society Museum,10.00,"1200 SW Park Ave, Portland, OR 97205",1200,1700,3,45.5158065,-122.682324,history
+Mill Ends Park,0.00,"56 SW Taylor St, Portland, OR 97204",0,2400,1,45.51634843,-122.6728993,landmark
+Portland Saturday Market,0.00,"2 SW Naito Pkwy, Portland, OR 97204",1000,1700,2,45.52276662,-122.6697254,"shopping, festival, foodie"
+Downtown Park Blocks,0.00,"1436 SW Park Ave, Portland, OR 97201",0,2400,1,45.51451006,-122.6829461,landmark
+National Hat Museum,5.00,"1928 SE Ladd Ave, Portland, OR 97214",1000,1700,1,45.50947496,-122.6498082,history
+Providence Park,0.00,"1844 SW Morrison St, Portland, OR 97205",0,2400,4,45.5218655,-122.6908498,sports
+Portland Aerial Tram,10.00,"3303 S Bond Ave, Portland, OR 97239",530,2130,1,45.49941144,-122.6708667,"adventure, scenic"
+Wishing Tree,0.00,"2954 NE 7th Ave, Portland, OR 97212",0,2400,1,45.54467021,-122.6582317,landmark
+Stark’s Vacuum Museum,0.00,"107 NE Grand Ave, Portland, OR 97232",900,1700,2,45.52399706,-122.6609825,history
+Lincoln Street Kayak & Canoe Museum,0.00,"5340 SE Lincoln St, Portland, OR 97215",900,1900,2,45.50792669,-122.6072095,"history, eco"
+Laurelhurst Park,0.00," SE Cesar E Chavez Blvd & Stark St, Portland, OR 97214",500,2230,2,45.51944584,-122.6230634,"history, eco, scenic"
+Kelley Point Park,0.00,"N Kelly Point Park Rd, Portland, OR 97203",600,2200,2,45.63757481,-122.7538917,"eco, scenic"
+Collin's Beach (Clothing Optional),0.00,"NW Reeder Rd, Portland, OR 97231",400,2200,2,45.65321377,-122.831583,"history, eco, scenic, portlandia "
+Powell Butte Nature Park,0.00,"16160 SE Powell Blvd, Portland, OR 97236",700,2000,2,45.4907,-122.497,"eco, scenic"
+Sellwood Riverfront Park,0.00,"1221 SE Oaks Park Way, Portland, OR 97202",500,1200,4,45.4668,-122.6634,"eco, scenic, landmark"
+Benson Hotel,500.00,"309 SW Broadway, Portland, OR 97205",0,2400,0,45.5216,-122.6787,"hotel"
