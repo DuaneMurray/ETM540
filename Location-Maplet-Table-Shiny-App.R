@@ -25,10 +25,6 @@ setwd(".")
 #tourist_locations <- read.csv("portland_location_data_2.csv") # LOAD FROM FILE
 tourist_locations <- read.csv("TEST_portland_location_data_2.csv")
 
-# USE THE LAST ROW IN THE DATA FILE FOR THE STARTING LOCATION
-start_location <- tail(tourist_locations, n = 1)
-colnames(start_location) <- colnames(tourist_locations)
-
 # USE MEANINGFUL NAMES FOR THE DATA COLUMNS
 colnames(tourist_locations) <- c("Attraction", 
                                  "Cost",
@@ -38,6 +34,10 @@ colnames(tourist_locations) <- c("Attraction",
                                  "Latitude",
                                  "Longitude",
                                  "Classification")
+
+# USE THE LAST ROW IN THE DATA FILE FOR THE STARTING LOCATION
+start_location <- tail(tourist_locations, n = 1)
+colnames(start_location) <- colnames(tourist_locations)
 
 # JUST A TEMP LOCATION TO FILTER THE SOURCE DATA MATRIX BY USER SELECTIONS
 refined_locations <- tourist_locations
@@ -58,7 +58,7 @@ ui <- fluidPage(
       
       # USER BUDGET
       sliderInput(inputId = "budget" ,
-                  label="What is your budget per location?:",
+                  label="Max to spend per location?:",
                   value = 50, min=0, max=50),
     
       # USER CATEGORY INTERESTS - CAN SELECT MULTIPLE OPTIONS
@@ -143,8 +143,6 @@ server <- function(input, output, session) {
                             y = refined_locations[,6], 
                             loc_name = refined_locations[,1])
     
-    #time_required <- data.frame(id=1:n, time_req = refined_locations[,6])
-    
     starting_pt <- data.frame(id = 1:n, x = start_location[,7], 
                             y = start_location[,6])
     
@@ -204,9 +202,6 @@ server <- function(input, output, session) {
                   vjust = -1) +
         geom_line(data = paths, aes(group = trip_id)) + 
         ggtitle("Optimal Travel Route by Distance from the Benson Hotel for Filtered Locations")
-      
-      #          ggtitle(paste0("Optimal route with cost: ", 
-      #                 round(objective_value(result), 2)))
     })
     
     output$data <- renderDataTable({
@@ -221,7 +216,9 @@ server <- function(input, output, session) {
     refined_locations <<- tourist_locations
     refined_locations <<- subset(refined_locations, subset=(Cost<=input$budget))
     
-    #refined_locations <- filter(refined_locations, input$start_time >= OpenTime, input$end_time <= CloseTime)
+    #refined_locations <- filter(refined_locations, 
+    #                            input$start_time >= OpenTime, 
+    #                            input$end_time <= CloseTime)
     
     # ENSURE THAT THE STARTING LOCATION IS ALWAYS IN THE LIST
     colnames(start_location) <- colnames(tourist_locations)
@@ -251,14 +248,17 @@ server <- function(input, output, session) {
     output$data <- renderDataTable({
       refined_locations
     })
-    
-    total_budget <<- input$budget
+
   })
   
   # ASSOCIATED WITH THE INTEREST SELECTION VALUES IN THE USER INTERFACE
   observeEvent(input$interests, {
     
     #refined_locations <- tourist_locations
+    
+    ##########
+    # FILTER LOCATIONS BY USER SELECTED INTEREST AREAS
+    ##########
     
     #output$text <- renderText({ 
     #  input$interests 
@@ -290,6 +290,10 @@ server <- function(input, output, session) {
   observeEvent(input$locations, {
     
     #refined_locations <- tourist_locations
+    
+    ##########
+    # FILTER LOCATIONS BY USER SELECTED ATTRACTIONS
+    ##########
     
     #output$text <- renderText({ 
     #  input$locations 
@@ -342,7 +346,7 @@ server <- function(input, output, session) {
     refined_locations <<- tourist_locations
     
     updateSliderInput(session, inputId = "budget" ,
-                label="What is your budget?:",
+                label="Max to spend per location?:",
                 value = 50, min=0, max=50)
     
     updateSelectInput(session, "interests", "Choose the areas that you are 
@@ -398,28 +402,6 @@ server <- function(input, output, session) {
     })
     
   })
-  
-  # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
-#  output$mymap <- renderLeaflet({
-#    leaflet() %>%
-#    addTiles() %>%
-#    setView(-122.6792634, 45.51867737, zoom = 14) %>%
-#      addCircleMarkers(lng = start_location[,7],
-#                       lat = start_location[,6],
-#                       label = as.character(start_location[,1]),
-#                       popup = as.character(start_location[,3]),
-#                       color = "red") %>%
-#      addMarkers(lng = refined_locations[,7], 
-#                 lat = refined_locations[,6], 
-#                 label = as.character(refined_locations[,1]), 
-#                 popup = as.character(refined_locations[,3]))
-#  })
-
-  # OUTPUT THE CONTENTS OF THE refined_locations MATRIX IN A TABLE
-  # DEFINED AS "data" IN THE USER INTERFACE
-#  output$data <- renderDataTable({
-#    refined_locations
-#  })
   
 } # END SERVER
 
