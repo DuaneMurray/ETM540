@@ -1,6 +1,8 @@
 #
 ####################################################################
-# ETM-540 TEAM 1 FINAL PROJECT - SHINY APPLICATION
+# ETM-540 TEAM 1 FINAL PROJECT - R SHINY APPLICATION
+#
+# Source Code Respository: https://github.com/DuaneMurray/ETM540
 ####################################################################
 # 
 
@@ -15,9 +17,10 @@ suppressPackageStartupMessages(library(ompr))
 suppressPackageStartupMessages(library(ompr.roi))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(tidyverse))
-#library(DT)
+#library(DT) # FUTURE: SELECTION/MANIPULATION OF DATA FROM TABLES
 
-setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
+#setwd("G:/My Drive/FALL-2021/ETM640/Project/Code/") # SET WORKING DIR
+setwd(".")
 
 #tourist_locations <- read.csv("portland_location_data_2.csv") # LOAD FROM FILE
 tourist_locations <- read.csv("TEST_portland_location_data_2.csv")
@@ -125,6 +128,13 @@ server <- function(input, output, session) {
   
   # ACTIONS TO TAKE WHEN THE USER PRESSES THE RUN MODEL BUTTON IN THE UI
   observeEvent(input$run_model, {
+    
+    output$optimal_path <- renderPlot({
+      # CLEAR THE GGPLOT OUTPUT AREA
+    })
+    output$text <- renderText({ 
+      # CLEAR THE TEXT OUTPUT AREA 
+    })
     
     n <- nrow(refined_locations) # NUMBER OF TOTAL LOCATIONS TO VISIT
 
@@ -250,29 +260,29 @@ server <- function(input, output, session) {
     
     #refined_locations <- tourist_locations
     
-    output$text <- renderText({ 
-      input$interests 
-    })
+    #output$text <- renderText({ 
+    #  input$interests 
+    #})
     
     # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
-    output$mymap <- renderLeaflet({
-      leaflet() %>%
-        addTiles() %>%
-        setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addCircleMarkers(lng = start_location[,7],
-                         lat = start_location[,6],
-                         label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,3]),
-                         color = "red") %>%
-        addMarkers(lng = refined_locations[,7], 
-                   lat = refined_locations[,6], 
-                   label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,3]))
-    })
-    
-    output$data <- renderDataTable({
-      refined_locations
-    })
+    #    output$mymap <- renderLeaflet({
+    #      leaflet() %>%
+    #        addTiles() %>%
+    #        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+    #        addCircleMarkers(lng = start_location[,7],
+    #                         lat = start_location[,6],
+    #                         label = as.character(start_location[,1]),
+    #                         popup = as.character(start_location[,3]),
+    #                         color = "red") %>%
+    #        addMarkers(lng = refined_locations[,7], 
+    #                   lat = refined_locations[,6], 
+    #                   label = as.character(refined_locations[,1]), 
+    #                   popup = as.character(refined_locations[,3]))
+    #    })
+    #    
+    #    output$data <- renderDataTable({
+    #      refined_locations
+    #    })
       
   })
   
@@ -281,29 +291,29 @@ server <- function(input, output, session) {
     
     #refined_locations <- tourist_locations
     
-    output$text <- renderText({ 
-      input$locations 
-    })
+    #output$text <- renderText({ 
+    #  input$locations 
+    #})
     
     # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
-    output$mymap <- renderLeaflet({
-      leaflet() %>%
-        addTiles() %>%
-        setView(-122.6792634, 45.51867737, zoom = 14) %>%
-        addCircleMarkers(lng = start_location[,7],
-                         lat = start_location[,6],
-                         label = as.character(start_location[,1]),
-                         popup = as.character(start_location[,3]),
-                         color = "red") %>%
-        addMarkers(lng = refined_locations[,7], 
-                   lat = refined_locations[,6], 
-                   label = as.character(refined_locations[,1]), 
-                   popup = as.character(refined_locations[,3]))
-    })
-    
-    output$data <- renderDataTable({
-      refined_locations
-    })
+    #    output$mymap <- renderLeaflet({
+    #      leaflet() %>%
+    #        addTiles() %>%
+    #        setView(-122.6792634, 45.51867737, zoom = 14) %>%
+    #        addCircleMarkers(lng = start_location[,7],
+    #                         lat = start_location[,6],
+    #                         label = as.character(start_location[,1]),
+    #                         popup = as.character(start_location[,3]),
+    #                         color = "red") %>%
+    #        addMarkers(lng = refined_locations[,7], 
+    #                   lat = refined_locations[,6], 
+    #                   label = as.character(refined_locations[,1]), 
+    #                   popup = as.character(refined_locations[,3]))
+    #    })
+    #    
+    #    output$data <- renderDataTable({
+    #      refined_locations
+    #    })
     
   })
   
@@ -384,32 +394,32 @@ server <- function(input, output, session) {
     })
     
     output$optimal_path <- renderPlot({
-      
+      # CLEAR THE GGPLOT OUTPUT AREA
     })
     
   })
   
   # OUTPUT CONTENTS OF LEAFLET MAP TO THE "mymap" AREA OF THE USER INTERFACE
-  output$mymap <- renderLeaflet({
-    leaflet() %>%
-    addTiles() %>%
-    setView(-122.6792634, 45.51867737, zoom = 14) %>%
-      addCircleMarkers(lng = start_location[,7],
-                       lat = start_location[,6],
-                       label = as.character(start_location[,1]),
-                       popup = as.character(start_location[,3]),
-                       color = "red") %>%
-      addMarkers(lng = refined_locations[,7], 
-                 lat = refined_locations[,6], 
-                 label = as.character(refined_locations[,1]), 
-                 popup = as.character(refined_locations[,3]))
-  })
+#  output$mymap <- renderLeaflet({
+#    leaflet() %>%
+#    addTiles() %>%
+#    setView(-122.6792634, 45.51867737, zoom = 14) %>%
+#      addCircleMarkers(lng = start_location[,7],
+#                       lat = start_location[,6],
+#                       label = as.character(start_location[,1]),
+#                       popup = as.character(start_location[,3]),
+#                       color = "red") %>%
+#      addMarkers(lng = refined_locations[,7], 
+#                 lat = refined_locations[,6], 
+#                 label = as.character(refined_locations[,1]), 
+#                 popup = as.character(refined_locations[,3]))
+#  })
 
   # OUTPUT THE CONTENTS OF THE refined_locations MATRIX IN A TABLE
   # DEFINED AS "data" IN THE USER INTERFACE
-  output$data <- renderDataTable({
-    refined_locations
-  })
+#  output$data <- renderDataTable({
+#    refined_locations
+#  })
   
 } # END SERVER
 
